@@ -23,6 +23,7 @@ import android.util.Size;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 import java.io.File;
@@ -33,47 +34,52 @@ import java.lang.ref.WeakReference;
 
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CODE = 22;
-    Button btnpicture;
+
+//    CHANGED TO IMAGE BUTTON -> RAINNAND
+    ImageButton btnpicture;
     ImageView imageView;
     ActivityResultLauncher<Intent> activityResultLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        btnpicture = findViewById(R.id.btncamera_id);
-        imageView = findViewById(R.id.image);
+        try {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_main);
+            btnpicture = findViewById(R.id.btncamera_id);
+            imageView = findViewById(R.id.image);
 
-        btnpicture.setOnClickListener(new View.OnClickListener() {
+            btnpicture.setOnClickListener(new View.OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-                Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                activityResultLauncher.launch(cameraIntent);
-            }
+                @Override
+                public void onClick(View v) {
+                    Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    activityResultLauncher.launch(cameraIntent);
+                }
 
-        });
+            });
 
-        activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+            activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
 
-            @Override
-            public void onActivityResult(ActivityResult result) {
+                @Override
+                public void onActivityResult(ActivityResult result) {
 
-                Bundle extras = result.getData().getExtras();
-                Uri imageUri;
-                Bitmap imageBitmap = (Bitmap) extras.get("data");
-                WeakReference<Bitmap> result_1 = new WeakReference<>(Bitmap.createScaledBitmap(imageBitmap,
+                    Bundle extras = result.getData().getExtras();
+                    Uri imageUri;
+                    Bitmap imageBitmap = (Bitmap) extras.get("data");
+                    WeakReference<Bitmap> result_1 = new WeakReference<>(Bitmap.createScaledBitmap(imageBitmap,
 
-                    imageBitmap.getWidth(), imageBitmap.getHeight(), false).
-                copy(Bitmap.Config.RGB_565, true));
-                Bitmap bm = result_1.get();
-                imageUri = saveImage(bm, MainActivity.this);
-                imageView.setImageURI(imageUri);
+                        imageBitmap.getWidth(), imageBitmap.getHeight(), false).
+                    copy(Bitmap.Config.RGB_565, true));
+                    Bitmap bm = result_1.get();
+                    imageUri = saveImage(bm, MainActivity.this);
+                    imageView.setImageURI(imageUri);
 
-            }
+                }
 
-        });
-
+            });
+        } catch (Exception e) {
+            System.out.println(e.getMessage());;
+        }
 
 
     }
@@ -90,7 +96,17 @@ public class MainActivity extends AppCompatActivity {
             image.compress(Bitmap.CompressFormat.JPEG, 100, stream);
             stream.flush();
             stream.close();
-            uri = FileProvider.getUriForFile(context.getApplicationContext(), "com.allcodingtutorial.camerafull1"+".provider", file);
+
+            // change this: "com.allcodingtutorial.camerafull1" WRONG NAME
+
+            // uri = FileProvider.getUriForFile(context.getApplicationContext(), "com.allcodingtutorial.camerafull1"+".provider", file);
+
+            // to this: -> by RAINNAND
+            uri = FileProvider.getUriForFile(
+                    this,
+                    "com.example.appdevy3t3.provider",
+                    file
+            );
 
         }
 
