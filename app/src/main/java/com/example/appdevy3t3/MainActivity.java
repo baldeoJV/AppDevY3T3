@@ -2,48 +2,99 @@ package com.example.appdevy3t3;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+
 import android.content.Intent;
-import android.graphics.Bitmap;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.View;
-import android.widget.ImageButton;
-import android.widget.ImageView;
+import android.widget.Button;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
-    private static final int REQUEST_CODE = 22;
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
-    ImageButton btnpicture;
-    ImageView imageView;
+import android.Manifest;
+import android.util.Log;
+
+
+public class MainActivity extends AppCompatActivity {
+    Button btnpicture;
+    static final int REQUEST_CODE = 22;
+    private Uri photoURI;
+    private String currentPhotoPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        btnpicture = findViewById(R.id.btncamera_id);
-        imageView = findViewById(R.id.image);
+        //Asks the phone for camera permission
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CAMERA},
+                    100);
+        }
+
+        btnpicture = findViewById(R.id.button);
 
         btnpicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(cameraIntent, REQUEST_CODE);
+                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//                Log.d("CAMERA_CHECK", "Resolved activity: " + takePictureIntent.resolveActivity(getPackageManager()));
+//                if (takePictureIntent.resolveActivity(getPackageManager()) != null) { }
+                Toast.makeText(MainActivity.this, "Works", Toast.LENGTH_SHORT).show();
+                File photoFile = null;
+                try {
+                    photoFile = createImageFile();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+
+                if (photoFile != null) {
+                    photoURI = FileProvider.getUriForFile(MainActivity.this,
+                            getPackageName() + ".fileprovider",
+                            photoFile);
+
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                    startActivityForResult(takePictureIntent, REQUEST_CODE);
+                }
+
             }
         });
+
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
         if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
-            Bitmap photo = (Bitmap )data.getExtras().get("data");
-            imageView.setImageBitmap(photo);
-            Toast.makeText(this, "Picture taken!", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, "Image Capture Failed", Toast.LENGTH_SHORT).show();
-            super.onActivityResult(requestCode, resultCode, data);
+            Intent intent = new Intent(MainActivity.this, BreedResults.class);
+            intent.putExtra("image_path", photoURI.toString());
+            startActivity(intent);
         }
     }
+
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(imageFileName, ".jpg", storageDir);
+
+        currentPhotoPath = image.getAbsolutePath(); // Store the file path for later use
+        return image;
+    }
+
 }
 

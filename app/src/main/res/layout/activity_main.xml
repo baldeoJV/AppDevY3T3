@@ -29,52 +29,23 @@
 
 
     <!-- Camera Icon with Ripple Effect -->
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cameraCard"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:layout_marginTop="16dp"
-        app:cardCornerRadius="60dp"
-        app:cardElevation="4dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/appTitle">
-
-        <ImageButton
-            android:id="@+id/btncamera_id"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Open Camera"
-            android:padding="24dp"
-            android:scaleType="fitCenter"
-            android:src="@android:drawable/ic_menu_camera" />
-
-        <!-- COMMENT -->
-        <ImageView
-            android:id="@+id/image"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@+id/btncamera_id"
-            android:contentDescription="pic image" />
-    </androidx.cardview.widget.CardView>
 
     <!-- Camera Text -->
+
+
+    <!-- Dog Library Title -->
     <TextView
         android:id="@+id/cameraText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="24dp"
         android:text="Scan Dog Breed"
         android:textColor="#000000"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cameraCard" />
+        app:layout_constraintTop_toBottomOf="@+id/button" />
 
-
-
-    <!-- Dog Library Title -->
     <TextView
         android:id="@+id/libraryTitle"
         android:layout_width="wrap_content"
@@ -280,6 +251,17 @@
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
     </androidx.cardview.widget.CardView>
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Test"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appTitle" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

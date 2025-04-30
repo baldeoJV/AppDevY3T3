@@ -1,6 +1,10 @@
 package com.example.appdevy3t3;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,5 +24,13 @@ public class BreedResults extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        ImageView imageResults = findViewById(R.id.imageView);
+        String imagePath = getIntent().getStringExtra("image_path");
+
+        if (imagePath != null) {
+            Uri imageUri = Uri.parse(imagePath);
+            imageResults.setImageURI(imageUri);
+        }
     }
 }
