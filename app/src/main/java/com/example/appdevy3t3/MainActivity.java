@@ -13,7 +13,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import java.io.File;
@@ -27,7 +27,7 @@ import android.util.Log;
 
 
 public class MainActivity extends AppCompatActivity {
-    Button btnpicture;
+    ImageButton btnpicture;
     static final int REQUEST_CODE = 22;
     private Uri photoURI;
     private String currentPhotoPath;
@@ -45,15 +45,12 @@ public class MainActivity extends AppCompatActivity {
                     100);
         }
 
-        btnpicture = findViewById(R.id.button);
+        btnpicture = findViewById(R.id.cameraButton);
 
         btnpicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//                Log.d("CAMERA_CHECK", "Resolved activity: " + takePictureIntent.resolveActivity(getPackageManager()));
-//                if (takePictureIntent.resolveActivity(getPackageManager()) != null) { }
-                Toast.makeText(MainActivity.this, "Works", Toast.LENGTH_SHORT).show();
                 File photoFile = null;
                 try {
                     photoFile = createImageFile();
@@ -69,7 +66,6 @@ public class MainActivity extends AppCompatActivity {
                     takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                     startActivityForResult(takePictureIntent, REQUEST_CODE);
                 }
-
             }
         });
 

@@ -1,18 +1,36 @@
 package com.example.appdevy3t3;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
+
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class BreedResults extends AppCompatActivity {
+    Button backButton;
+    Button cameraButton;
+    static final int REQUEST_CODE = 22;
+    private Uri photoURI;
+    private String currentPhotoPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,5 +50,61 @@ public class BreedResults extends AppCompatActivity {
             Uri imageUri = Uri.parse(imagePath);
             imageResults.setImageURI(imageUri);
         }
+
+        backButton = findViewById(R.id.button);
+        cameraButton = findViewById(R.id.button2);
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(BreedResults.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        cameraButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                File photoFile = null;
+                try {
+                    photoFile = createImageFile();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+
+                if (photoFile != null) {
+                    photoURI = FileProvider.getUriForFile(BreedResults.this,
+                            getPackageName() + ".fileprovider",
+                            photoFile);
+
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                    startActivityForResult(takePictureIntent, REQUEST_CODE);
+                }
+
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+            if (photoURI != null) {
+                ImageView imageResults = findViewById(R.id.imageView);
+                imageResults.setImageURI(photoURI);
+            }
+        }
+    }
+
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(imageFileName, ".jpg", storageDir);
+
+        currentPhotoPath = image.getAbsolutePath(); // Store the file path for later use
+        return image;
     }
 }
